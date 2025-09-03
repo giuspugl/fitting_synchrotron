@@ -54,14 +54,15 @@ def main(args) :
     method='TNC'
     #freefree=  hp.read_map(filename=f"./lwa_data/COM_CompMap_freefree-commander_0256_R2.00.fits" ,field= ['EM_ML', 'TEMP_ML'] )
     components =[  Synchrotron(nu0=.040 , running=None  ,  units='K_RJ'  ) ]
-    nsidepatches = [nside,4, nside  ]
-    nsidegains = (nfreq-1)*[8]
-    #nsidepatches += nsidegains
+    nsidepatches = [nside, nside  ]
+    nsidegains = (nfreq-1)*[0]
+    nsidepatches =nsidegains + nsidepatches
+    print(len(nsidepatches), nsidepatches,  )
 
     import time
     s= time.perf_counter()
 
-    results   = sr.multi_res_comp_sep(components, instrument, freq_maps, nsides= nsidepatches ,
+    results   = sr.multi_res_comp_sep_gain(components, instrument, freq_maps, nsides= nsidepatches ,
                                     method=method,
                                     tol = tol, options=options)
     e= time.perf_counter()
@@ -70,7 +71,7 @@ def main(args) :
     import pdb
     #pdb.set_trace()
 
-    np.savez(f'{args.output_dir}/fgbuster_params_{args.label}.npz',
+    np.savez(f'{args.output_dir}/fgbuster_params_{args.label}_nside{args.nside}.npz',
                     **{n: a for n, a in zip(results.params, results.x)})
 
 
